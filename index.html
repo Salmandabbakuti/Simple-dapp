@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Counter Dapp</title>
+</head>
+<body>
+	<div id="band"></div>
+	<h3> Counter </h3> 
+	<link rel="stylesheet" href="index.css">
+<script src="web3.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<div style="text-align:center;">
+<p>Current count: <span id="count">??</span></p>
+<button id="getcount">Get current count</button>
+<button id="increment">Increment count</button>
+<div id="log"></div>
+</div>
+
+<script>
+  function log(message) {
+    $('#log').append($('<p>').text(message));
+    $('#log').scrollTop($('#log').prop('scrollHeight'));
+  }
+
+  function error(message) {
+    $('#log').append($('<p>').addClass('dark-red').text(message));
+    $('#log').scrollTop($('#log').prop('scrollHeight'));
+  }
+
+  function waitForReceipt(hash, cb) {
+    web3.eth.getTransactionReceipt(hash, function (err, receipt) {
+      if (err) {
+        error(err);
+      }
+
+      if (receipt !== null) {
+        // Transaction went through
+        if (cb) {
+          cb(receipt);
+        }
+      } else {
+        // Try again in 1 second
+        window.setTimeout(function () {
+          waitForReceipt(hash, cb);
+        }, 1000);
+      }
+    });
+  }
+
+  var address = "0xa0543e7a1b5f8a91f5419247f7e3aa65c6933897";
+  var abi = [{"constant":false,"inputs":[],"name":"increment","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"inputs":[{"name":"_count","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"constant":true,"inputs":[],"name":"getCount","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}];
+  $(function () {
+    var counter;
+
+    $('#getcount').click(function (e) {
+      e.preventDefault();
+
+      log("Calling getCount...");
+
+      counter.getCount.call(function (err, result) {
+        if (err) {
+          return error(err);
+        } else {
+          log("getCount call executed successfully.");
+        }
+
+        // The return value is a BigNumber object
+        $('#count').text(result.toString());
+      });
+    });
+
+    $('#increment').click(function (e) {
+      e.preventDefault();
+
+      if(web3.eth.defaultAccount === undefined) {
+        return error("No accounts found. If you're using MetaMask, " +
+                     "please unlock it first and reload the page.");
+      }
+
+      log("Calling increment...");
+
+      counter.increment.sendTransaction(function (err, hash) {
+        if (err) {
+          return error(err);
+        }
+
+        waitForReceipt(hash, function () {
+          log("Transaction succeeded. " +
+              "Call getCount again to see the latest count.");
+        });
+      });
+    });
+
+    if (typeof(web3) === "undefined") {
+      error("Unable to find web3. " +
+            "Please run MetaMask (or something else that injects web3).");
+    } else {
+      log("Found injected web3.");
+      web3 = new Web3(web3.currentProvider);
+      if (web3.version.network != 3) {
+        error("Wrong network detected. Please switch to the Ropsten test network.");
+      } else {
+        log("Connected to the Ropsten test network.");
+        counter = web3.eth.contract(abi).at(address);
+        $('#getcount').click();
+      }
+    }
+  });
+</script>
+</body>
+</html>
