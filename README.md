@@ -1,6 +1,6 @@
 # Simple-dapp
 This Small Repo is helpful to understand how frontend and backend(smartcontract) interacts with each other.
-This was created during my selpaced learning of ethereum.. So lets make it count..
+This was created during my selfpaced learning of ethereum.. So lets make it count..
 # Steps to interact with this app
 1.Download and unzip repository into desktop 
 2.Run http-server in the unzipped folder directory through cli.
