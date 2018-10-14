@@ -8,3 +8,4 @@ This was created during my selfpaced learning of ethereum.. So lets make it coun
 4.install Metamask plugin on chrome
 5. Choose Ropsten testnet and have fake ether in account..
 start playing around...
+#OR link right from github is https://salmandabbakuti.github.io/Simply-decentralized/
