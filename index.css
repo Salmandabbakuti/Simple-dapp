@@ -19,8 +19,7 @@ h3 {
     color: green;
     text-align: center;
 }
-
-button {
+#increment {
     border: 0;
     border-radius: 10px;
     padding: 10px;
